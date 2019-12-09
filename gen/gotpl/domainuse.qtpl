@@ -6,6 +6,10 @@
 
 // DomainTemplate is the template for a single domain file.
 {% func DomainTemplate(d *pdl.Domain, domains []*pdl.Domain) %}
+// {%s= d.Domain.String() %} executes a cdproto command under {%s= d.Domain.String() %} domain.
+type {%s= d.Domain.String() %} struct {
+	ctxWithExecutor context.Context
+}
 {% for _, c := range d.Commands %}
 {%s= CommandTemplate(c, d, domains) %}
 {% endfor %}

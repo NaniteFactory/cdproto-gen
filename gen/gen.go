@@ -64,7 +64,7 @@ func (gg *GoGenerator) Emit() map[string]*bytes.Buffer {
 type fileBuffers map[string]*bytes.Buffer
 
 // get retrieves the file buffer for s, or creates it if it is not yet available.
-func (fb fileBuffers) get(s string, pkgName string, d *pdl.Domain, domains []*pdl.Domain, basePkg string) *quicktemplate.Writer {
+func (fb fileBuffers) get(s string, pkgName string, d *pdl.Domain, domains []*pdl.Domain, cdprotoBasePkg string) *quicktemplate.Writer {
 	// check if it already exists
 	if b, ok := fb[s]; ok {
 		return quicktemplate.AcquireWriter(b)
@@ -85,14 +85,15 @@ func (fb fileBuffers) get(s string, pkgName string, d *pdl.Domain, domains []*pd
 
 	// add import map
 	importMap := map[string]string{
+		"context":                            "",
 		"encoding/json":                      "",
-		basePkg + "/cdp":                     "",
+		cdprotoBasePkg + "/cdp":              "",
 		"github.com/mailru/easyjson":         "",
 		"github.com/mailru/easyjson/jlexer":  "",
 		"github.com/mailru/easyjson/jwriter": "",
 	}
 	for _, d := range domains {
-		importMap[basePkg+"/"+genutil.PackageName(d)] = ""
+		importMap[cdprotoBasePkg+"/"+genutil.PackageName(d)] = ""
 	}
 	gotpl.StreamFileImportTemplate(w, importMap)
 

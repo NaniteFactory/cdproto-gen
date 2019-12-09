@@ -204,6 +204,8 @@ func ResolveType(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) (pdl.DomainT
 			s = "cdp."
 		case dtyp != d.Domain:
 			s = strings.ToLower(dtyp.String()) + "."
+		default:
+			s = strings.ToLower(dtyp.String()) + "."
 		}
 
 		// add ptr if object
