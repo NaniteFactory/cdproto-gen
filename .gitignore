@@ -1,3 +1,4 @@
-/cdproto-gen
-/cdproto-gen.exe
+/chromebot-domain-gen
+*.exe
 *.json
+*.log

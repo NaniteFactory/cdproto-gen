@@ -1,8 +1,3 @@
-// cdproto-gen is a tool to generate the low-level Chrome DevTools Protocol
-// implementation types used by chromedp from the CDP protocol definitions
-// (PDLs) in the Chromium source tree.
-//
-// Please see README.md for more information on using this tool.
 package main
 
 //go:generate qtc -dir gen/gotpl -ext qtpl
@@ -23,15 +18,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mailru/easyjson/bootstrap"
-	"github.com/mailru/easyjson/parser"
 	glob "github.com/ryanuber/go-glob"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/imports"
 
 	"github.com/chromedp/cdproto-gen/diff"
 	"github.com/chromedp/cdproto-gen/fixup"
-	"github.com/chromedp/cdproto-gen/gen"
+	"github.com/nanitefactory/chromebot-domain-gen/gen"
 	"github.com/chromedp/cdproto-gen/gen/genutil"
 	"github.com/chromedp/cdproto-gen/pdl"
 	"github.com/chromedp/cdproto-gen/util"
@@ -58,7 +51,7 @@ var (
 	flagNoClean = flag.Bool("no-clean", false, "toggle not cleaning (removing) existing directories")
 	flagNoDump  = flag.Bool("no-dump", false, "toggle not dumping generated protocol file to out directory")
 
-	flagGoPkg = flag.String("go-pkg", "github.com/chromedp/cdproto", "go base package name")
+	flagGoPkg = flag.String("go-pkg", "github.com/nanitefactory/chromebot/domain", "go base package name")
 	flagGoWl  = flag.String("go-wl", "LICENSE,README.md,*.pdl,go.mod,go.sum,"+easyjsonGo, "comma-separated list of files to whitelist (ignore)")
 
 	// flagWorkers = flag.Int("workers", runtime.NumCPU(), "number of workers")
@@ -265,9 +258,9 @@ func run() error {
 	}
 
 	// easyjson
-	if err = easyjson(pkgs); err != nil {
-		return err
-	}
+	// if err = easyjson(pkgs); err != nil {
+	// 	return err
+	// }
 
 	// gofmt
 	if err = gofmt(fmtFiles(files, pkgs)); err != nil {
@@ -419,31 +412,31 @@ func goimports(fileBuffers map[string]*bytes.Buffer) error {
 	return eg.Wait()
 }
 
-// easyjson runs easy json on the list of packages.
-func easyjson(pkgs []string) error {
-	util.Logf("RUNNING: easyjson")
-	eg, _ := errgroup.WithContext(context.Background())
-	for _, k := range pkgs {
-		eg.Go(func(n string) func() error {
-			return func() error {
-				n = filepath.Join(*flagOut, n)
-				p := parser.Parser{AllStructs: true}
-				if err := p.Parse(n, true); err != nil {
-					return err
-				}
-				g := bootstrap.Generator{
-					OutName:  filepath.Join(n, easyjsonGo),
-					PkgPath:  p.PkgPath,
-					PkgName:  p.PkgName,
-					Types:    p.StructNames,
-					NoFormat: true,
-				}
-				return g.Run()
-			}
-		}(k))
-	}
-	return eg.Wait()
-}
+// // easyjson runs easy json on the list of packages.
+// func easyjson(pkgs []string) error {
+// 	util.Logf("RUNNING: easyjson")
+// 	eg, _ := errgroup.WithContext(context.Background())
+// 	for _, k := range pkgs {
+// 		eg.Go(func(n string) func() error {
+// 			return func() error {
+// 				n = filepath.Join(*flagOut, n)
+// 				p := parser.Parser{AllStructs: true}
+// 				if err := p.Parse(n, true); err != nil {
+// 					return err
+// 				}
+// 				g := bootstrap.Generator{
+// 					OutName:  filepath.Join(n, easyjsonGo),
+// 					PkgPath:  p.PkgPath,
+// 					PkgName:  p.PkgName,
+// 					Types:    p.StructNames,
+// 					NoFormat: true,
+// 				}
+// 				return g.Run()
+// 			}
+// 		}(k))
+// 	}
+// 	return eg.Wait()
+// }
 
 // gofmt go formats all files on disk.
 func gofmt(files []string) error {
@@ -472,7 +465,7 @@ func gofmt(files []string) error {
 // buffers and packages.
 func fmtFiles(files map[string]*bytes.Buffer, pkgs []string) []string {
 	filelen := len(files)
-	f := make([]string, filelen+len(pkgs))
+	f := make([]string, filelen/*+len(pkgs)*/)
 
 	var i int
 	for n := range files {
@@ -480,9 +473,9 @@ func fmtFiles(files map[string]*bytes.Buffer, pkgs []string) []string {
 		i++
 	}
 
-	for i, pkg := range pkgs {
-		f[i+filelen] = filepath.Join(pkg, easyjsonGo)
-	}
+	// for i, pkg := range pkgs {
+	// 	f[i+filelen] = filepath.Join(pkg, easyjsonGo)
+	// }
 
 	sort.Strings(f)
 	return f

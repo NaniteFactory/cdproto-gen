@@ -90,9 +90,22 @@ func CommandReturnsType(t *pdl.Type) string {
 func ParamDesc(t *pdl.Type) string {
 	desc := t.Description
 	if desc != "" {
-		desc = " - " + genutil.CleanDesc(desc)
+		if t.Optional {
+			desc = " - " + "This can be nil. (Optional) " + genutil.CleanDesc(desc)
+		} else {
+			desc = " - " + genutil.CleanDesc(desc)
+		}
 	}
 	return snaker.ForceLowerCamelIdentifier(t.Name) + desc
+}
+
+// IsTypeOriginallyNilable is a predicate.
+func IsTypeOriginallyNilable(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) bool {
+	_, _, z := ResolveType(t, d, domains)
+	if strings.HasPrefix(z, "*") || strings.HasPrefix(z, "[]") {
+		return true
+	}
+	return false
 }
 
 // ParamList returns the list of parameters.
@@ -103,7 +116,22 @@ func ParamList(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain, all bool) stri
 			continue
 		}
 		_, _, z := ResolveType(p, d, domains)
+		if p.Optional && !strings.HasPrefix(z, "*") { // optional params will be nilable type (pointers) but no double pointer
+			z = "*" + z
+		}
 		s += GoName(p, true) + " " + z + ","
+	}
+	return strings.TrimSuffix(s, ",")
+}
+
+// ArgList returns the list of arguments. (only for non-optional params)
+func ArgList(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain, all bool) string {
+	var s string
+	for _, p := range t.Parameters {
+		if !all && p.Optional {
+			continue
+		}
+		s += GoName(p, true) + ","
 	}
 	return strings.TrimSuffix(s, ",")
 }

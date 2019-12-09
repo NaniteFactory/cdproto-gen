@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/Masterminds/semver"
-
 	"github.com/chromedp/cdproto-gen/pdl"
 	"github.com/chromedp/cdproto-gen/util"
 )

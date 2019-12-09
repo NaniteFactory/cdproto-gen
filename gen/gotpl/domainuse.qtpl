@@ -1,0 +1,49 @@
+{% import (
+	"github.com/chromedp/cdproto-gen/gen/genutil"
+	"github.com/chromedp/cdproto-gen/pdl"
+	"strings"
+) %}
+
+// DomainTemplate is the template for a single domain file.
+{% func DomainTemplate(d *pdl.Domain, domains []*pdl.Domain) %}
+{% for _, c := range d.Commands %}
+{%s= CommandTemplate(c, d, domains) %}
+{% endfor %}
+{% endfunc %}
+
+// CommandTemplate defines a single command.
+{% func CommandTemplate(c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) %}{% code
+	domainName := d.Domain.String()
+	packageName := strings.ToLower(domainName)
+	cmdName := CamelName(c)
+	hasEmptyRet := len(c.Returns) == 0
+	retTypeList := RetTypeList(c, d, domains)
+	if retTypeList != "" {
+		retTypeList += ", "
+	}
+%}
+{%s= genutil.FormatComment(c.Description, "", cmdName + " ") %}
+//
+// See: {%s= DocRefLink(c) %}{% if len(c.Parameters) > 0 %}
+//
+// parameters:{% for _, p := range c.Parameters %}
+//   {%s= ParamDesc(p) %}{% if p.Optional %} (Optional){% endif %}{% endfor %}{% endif %}{% if !hasEmptyRet %}
+//
+// returns:{% for _, p := range c.Returns %}{% if p.Name == Base64EncodedParamName %}{% continue %}{% endif %}
+//   {%s= ParamDesc(p) %}{% endfor %}{% endif %}
+func (do{%s= domainName %} {%s= domainName %}) {%s= cmdName %}({%s= ParamList(c, d, domains, true) %}) ({%s= retTypeList %}err error) {
+	b := {%s= packageName %}.{%s= cmdName %}({%s= ArgList(c, d, domains, false) %})
+	{% if len(c.Parameters) != 0 %}{% for _, p := range c.Parameters %}{% if !p.Optional %}{% continue %}{% endif %}
+	{%s= OptionalCallToCommandOptionFuncTemplate(p, c, d, domains) %}{% endfor %}{% endif %}
+	return b.Do(do{%s= domainName %}.ctxWithExecutor)
+}
+{% endfunc %}
+
+{% func OptionalCallToCommandOptionFuncTemplate(t *pdl.Type, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) %}{% code
+	optName := OptionFuncPrefix + GoName(t, false) + OptionFuncSuffix
+	v := strings.TrimSpace(GoName(t, true))
+%}
+if {%s= v %} != nil {
+	b = b.{%s= optName %}{% if IsTypeOriginallyNilable(t, d, domains) %}({%s= v %}){% else %}(*{%s= v %}){% endif %}
+}
+{% endfunc %}
