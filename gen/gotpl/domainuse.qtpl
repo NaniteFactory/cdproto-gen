@@ -30,7 +30,7 @@
 //   {%s= ParamDesc(p) %}{% if p.Optional %} (Optional){% endif %}{% endfor %}{% endif %}{% if !hasEmptyRet %}
 //
 // returns:{% for _, p := range c.Returns %}{% if p.Name == Base64EncodedParamName %}{% continue %}{% endif %}
-//   {%s= ParamDesc(p) %}{% endfor %}{% endif %}
+//   {%s= RetParamDesc(p) %}{% endfor %}{% endif %}
 func (do{%s= domainName %} {%s= domainName %}) {%s= cmdName %}({%s= ParamList(c, d, domains, true) %}) ({%s= retTypeList %}err error) {
 	b := {%s= packageName %}.{%s= cmdName %}({%s= ArgList(c, d, domains, false) %})
 	{% if len(c.Parameters) != 0 %}{% for _, p := range c.Parameters %}{% if !p.Optional %}{% continue %}{% endif %}

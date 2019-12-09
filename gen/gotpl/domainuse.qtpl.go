@@ -141,7 +141,7 @@ func StreamCommandTemplate(qw422016 *qt422016.Writer, c *pdl.Type, d *pdl.Domain
 			qw422016.N().S(`
 //   `)
 //line domainuse.qtpl:33
-			qw422016.N().S(ParamDesc(p))
+			qw422016.N().S(RetParamDesc(p))
 //line domainuse.qtpl:33
 		}
 //line domainuse.qtpl:33

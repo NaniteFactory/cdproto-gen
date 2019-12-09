@@ -99,6 +99,15 @@ func ParamDesc(t *pdl.Type) string {
 	return snaker.ForceLowerCamelIdentifier(t.Name) + desc
 }
 
+// RetParamDesc returns a return parameter description.
+func RetParamDesc(t *pdl.Type) string {
+	desc := t.Description
+	if desc != "" {
+		desc = " - " + genutil.CleanDesc(desc)
+	}
+	return snaker.ForceLowerCamelIdentifier(t.Name) + desc
+}
+
 // IsTypeOriginallyNilable is a predicate.
 func IsTypeOriginallyNilable(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) bool {
 	_, _, z := ResolveType(t, d, domains)
