@@ -81,7 +81,7 @@ func (fb fileBuffers) get(s string, pkgName string, d *pdl.Domain, domains []*pd
 	}
 
 	// add package header
-	gotpl.StreamFileHeader(w, pkgName, v)
+	gotpl.StreamFileHeader(w, "domain", v) // "package domain" for all domains
 
 	// add import map
 	importMap := map[string]string{

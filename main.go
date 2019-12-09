@@ -257,11 +257,6 @@ func run() error {
 		return err
 	}
 
-	// easyjson
-	// if err = easyjson(pkgs); err != nil {
-	// 	return err
-	// }
-
 	// gofmt
 	if err = gofmt(fmtFiles(files, pkgs)); err != nil {
 		return err
@@ -368,12 +363,8 @@ func write(fileBuffers map[string]*bytes.Buffer) error {
 
 	for _, k := range keys {
 		// add out path
-		n := filepath.Join(*flagOut, k)
-
-		// create directory
-		if err := os.MkdirAll(filepath.Dir(n), 0755); err != nil {
-			return err
-		}
+		_, filename := filepath.Split(k)
+		n := filepath.Join(*flagOut, filename)
 
 		// write file
 		if err := ioutil.WriteFile(n, fileBuffers[k].Bytes(), 0644); err != nil {
@@ -397,12 +388,10 @@ func goimports(fileBuffers map[string]*bytes.Buffer) error {
 	for _, k := range keys {
 		eg.Go(func(n string) func() error {
 			return func() error {
-				fn := filepath.Join(*flagOut, n)
+				_, filename := filepath.Split(n)
+				fn := filepath.Join(*flagOut, filename)
 				buf, err := imports.Process(fn, fileBuffers[n].Bytes(), nil)
 				if err != nil {
-					return err
-				}
-				if err = os.MkdirAll(filepath.Dir(fn), 0755); err != nil {
 					return err
 				}
 				return ioutil.WriteFile(fn, buf, 0644)
@@ -412,32 +401,6 @@ func goimports(fileBuffers map[string]*bytes.Buffer) error {
 	return eg.Wait()
 }
 
-// // easyjson runs easy json on the list of packages.
-// func easyjson(pkgs []string) error {
-// 	util.Logf("RUNNING: easyjson")
-// 	eg, _ := errgroup.WithContext(context.Background())
-// 	for _, k := range pkgs {
-// 		eg.Go(func(n string) func() error {
-// 			return func() error {
-// 				n = filepath.Join(*flagOut, n)
-// 				p := parser.Parser{AllStructs: true}
-// 				if err := p.Parse(n, true); err != nil {
-// 					return err
-// 				}
-// 				g := bootstrap.Generator{
-// 					OutName:  filepath.Join(n, easyjsonGo),
-// 					PkgPath:  p.PkgPath,
-// 					PkgName:  p.PkgName,
-// 					Types:    p.StructNames,
-// 					NoFormat: true,
-// 				}
-// 				return g.Run()
-// 			}
-// 		}(k))
-// 	}
-// 	return eg.Wait()
-// }
-
 // gofmt go formats all files on disk.
 func gofmt(files []string) error {
 	util.Logf("RUNNING: gofmt")
@@ -445,7 +408,8 @@ func gofmt(files []string) error {
 	for _, k := range files {
 		eg.Go(func(n string) func() error {
 			return func() error {
-				n = filepath.Join(*flagOut, n)
+				_, filename := filepath.Split(n)
+				n = filepath.Join(*flagOut, filename)
 				in, err := ioutil.ReadFile(n)
 				if err != nil {
 					return err
@@ -465,17 +429,13 @@ func gofmt(files []string) error {
 // buffers and packages.
 func fmtFiles(files map[string]*bytes.Buffer, pkgs []string) []string {
 	filelen := len(files)
-	f := make([]string, filelen/*+len(pkgs)*/)
+	f := make([]string, filelen)
 
 	var i int
 	for n := range files {
 		f[i] = n
 		i++
 	}
-
-	// for i, pkg := range pkgs {
-	// 	f[i+filelen] = filepath.Join(pkg, easyjsonGo)
-	// }
 
 	sort.Strings(f)
 	return f
