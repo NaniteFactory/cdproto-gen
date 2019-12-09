@@ -1,0 +1,28 @@
+{% import "github.com/chromedp/cdproto-gen/pdl" %}
+{% func DomainManagerTemplate(domains []*pdl.Domain) %}
+package domain
+
+import (
+	"context"
+
+	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/chromedp"
+)
+
+// Domain executes a cdproto command against a chromedp context.
+type Domain struct {
+	ctxWithExecutor context.Context // chromedp context
+}
+
+// Do makes a Domain that executes a cdproto command against a chromedp context.
+// The function will panic if the given context is not an executable chromedp context.
+func Do(ctx context.Context) Domain {
+	return Domain{cdp.WithExecutor(ctx, chromedp.FromContext(ctx).Target)}
+}
+{% for _, domain := range domains %}
+// {%s= domain.Domain.String() %} executes a cdproto command under {%s= domain.Domain.String() %} domain.
+func (d Domain) {%s= domain.Domain.String() %}() {%s= domain.Domain.String() %} {
+	return {%s= domain.Domain.String() %}{d.ctxWithExecutor}
+}
+{% endfor %}
+{% endfunc %}

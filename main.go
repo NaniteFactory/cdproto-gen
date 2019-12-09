@@ -4,6 +4,7 @@ package main
 //go:generate gofmt -w -s gen/gotpl/
 
 import (
+	"github.com/nanitefactory/chromebot-domain-gen/gen/gotpl"
 	"bytes"
 	"context"
 	"errors"
@@ -259,6 +260,21 @@ func run() error {
 
 	// gofmt
 	if err = gofmt(fmtFiles(files, pkgs)); err != nil {
+		return err
+	}
+	
+	// domain manager
+	if err := func() error {
+		strFilepath := filepath.Join(*flagOut, "domain.go")
+		util.Logf("WRITING: %s", strFilepath)
+		f, err := os.Create(strFilepath)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		gotpl.WriteDomainManagerTemplate(f, processed)	
+		return nil
+	}(); err != nil {
 		return err
 	}
 
