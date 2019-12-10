@@ -125,7 +125,7 @@ func ParamList(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain, all bool) stri
 			continue
 		}
 		_, _, z := ResolveType(p, d, domains)
-		if p.Optional && !strings.HasPrefix(z, "*") { // optional params will be nilable type (pointers) but no double pointer
+		if p.Optional && !strings.HasPrefix(z, "*") && !strings.HasPrefix(z, "[]") { // optional params will be nilable type (pointers) but no double pointer
 			z = "*" + z
 		}
 		s += GoName(p, true) + " " + z + ","
@@ -318,7 +318,7 @@ func RetTypeList(t *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) string {
 			z = "[]byte"
 		}
 
-		s += snaker.ForceLowerCamelIdentifier(n) + " " + z + ","
+		s += snaker.ForceLowerCamelIdentifier("ret"+snaker.ForceCamelIdentifier(n)) + " " + z + ","
 	}
 
 	return strings.TrimSuffix(s, ",")

@@ -197,9 +197,8 @@ func (do`)
 //line domainuse.qtpl:39
 	qw422016.N().S(ArgList(c, d, domains, false))
 //line domainuse.qtpl:39
-	qw422016.N().S(`)
-	`)
-//line domainuse.qtpl:40
+	qw422016.N().S(`)`)
+//line domainuse.qtpl:39
 	if len(c.Parameters) != 0 {
 //line domainuse.qtpl:40
 		for _, p := range c.Parameters {
@@ -209,116 +208,79 @@ func (do`)
 				continue
 //line domainuse.qtpl:40
 			}
-//line domainuse.qtpl:40
+//line domainuse.qtpl:41
+			optName := OptionFuncPrefix + GoName(p, false) + OptionFuncSuffix
+			v := strings.TrimSpace(GoName(p, true))
+
+//line domainuse.qtpl:43
 			qw422016.N().S(`
-	`)
-//line domainuse.qtpl:41
-			qw422016.N().S(OptionalCallToCommandOptionFuncTemplate(p, c, d, domains))
-//line domainuse.qtpl:41
+	if `)
+//line domainuse.qtpl:44
+			qw422016.N().S(v)
+//line domainuse.qtpl:44
+			qw422016.N().S(` != nil {
+		b = b.`)
+//line domainuse.qtpl:45
+			qw422016.N().S(optName)
+//line domainuse.qtpl:45
+			if IsTypeOriginallyNilable(p, d, domains) {
+//line domainuse.qtpl:45
+				qw422016.N().S(`(`)
+//line domainuse.qtpl:45
+				qw422016.N().S(v)
+//line domainuse.qtpl:45
+				qw422016.N().S(`)`)
+//line domainuse.qtpl:45
+			} else {
+//line domainuse.qtpl:45
+				qw422016.N().S(`(*`)
+//line domainuse.qtpl:45
+				qw422016.N().S(v)
+//line domainuse.qtpl:45
+				qw422016.N().S(`)`)
+//line domainuse.qtpl:45
+			}
+//line domainuse.qtpl:45
+			qw422016.N().S(`
+	}`)
+//line domainuse.qtpl:46
 		}
-//line domainuse.qtpl:41
+//line domainuse.qtpl:46
 	}
-//line domainuse.qtpl:41
+//line domainuse.qtpl:46
 	qw422016.N().S(`
 	return b.Do(do`)
-//line domainuse.qtpl:42
+//line domainuse.qtpl:47
 	qw422016.N().S(domainName)
-//line domainuse.qtpl:42
+//line domainuse.qtpl:47
 	qw422016.N().S(`.ctxWithExecutor)
 }
 `)
-//line domainuse.qtpl:44
+//line domainuse.qtpl:49
 }
-
-//line domainuse.qtpl:44
-func WriteCommandTemplate(qq422016 qtio422016.Writer, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) {
-//line domainuse.qtpl:44
-	qw422016 := qt422016.AcquireWriter(qq422016)
-//line domainuse.qtpl:44
-	StreamCommandTemplate(qw422016, c, d, domains)
-//line domainuse.qtpl:44
-	qt422016.ReleaseWriter(qw422016)
-//line domainuse.qtpl:44
-}
-
-//line domainuse.qtpl:44
-func CommandTemplate(c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) string {
-//line domainuse.qtpl:44
-	qb422016 := qt422016.AcquireByteBuffer()
-//line domainuse.qtpl:44
-	WriteCommandTemplate(qb422016, c, d, domains)
-//line domainuse.qtpl:44
-	qs422016 := string(qb422016.B)
-//line domainuse.qtpl:44
-	qt422016.ReleaseByteBuffer(qb422016)
-//line domainuse.qtpl:44
-	return qs422016
-//line domainuse.qtpl:44
-}
-
-//line domainuse.qtpl:46
-func StreamOptionalCallToCommandOptionFuncTemplate(qw422016 *qt422016.Writer, t *pdl.Type, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) {
-//line domainuse.qtpl:47
-	optName := OptionFuncPrefix + GoName(t, false) + OptionFuncSuffix
-	v := strings.TrimSpace(GoName(t, true))
 
 //line domainuse.qtpl:49
-	qw422016.N().S(`
-if `)
-//line domainuse.qtpl:50
-	qw422016.N().S(v)
-//line domainuse.qtpl:50
-	qw422016.N().S(` != nil {
-	b = b.`)
-//line domainuse.qtpl:51
-	qw422016.N().S(optName)
-//line domainuse.qtpl:51
-	if IsTypeOriginallyNilable(t, d, domains) {
-//line domainuse.qtpl:51
-		qw422016.N().S(`(`)
-//line domainuse.qtpl:51
-		qw422016.N().S(v)
-//line domainuse.qtpl:51
-		qw422016.N().S(`)`)
-//line domainuse.qtpl:51
-	} else {
-//line domainuse.qtpl:51
-		qw422016.N().S(`(*`)
-//line domainuse.qtpl:51
-		qw422016.N().S(v)
-//line domainuse.qtpl:51
-		qw422016.N().S(`)`)
-//line domainuse.qtpl:51
-	}
-//line domainuse.qtpl:51
-	qw422016.N().S(`
-}
-`)
-//line domainuse.qtpl:53
-}
-
-//line domainuse.qtpl:53
-func WriteOptionalCallToCommandOptionFuncTemplate(qq422016 qtio422016.Writer, t *pdl.Type, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) {
-//line domainuse.qtpl:53
+func WriteCommandTemplate(qq422016 qtio422016.Writer, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) {
+//line domainuse.qtpl:49
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line domainuse.qtpl:53
-	StreamOptionalCallToCommandOptionFuncTemplate(qw422016, t, c, d, domains)
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
+	StreamCommandTemplate(qw422016, c, d, domains)
+//line domainuse.qtpl:49
 	qt422016.ReleaseWriter(qw422016)
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
 }
 
-//line domainuse.qtpl:53
-func OptionalCallToCommandOptionFuncTemplate(t *pdl.Type, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) string {
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
+func CommandTemplate(c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) string {
+//line domainuse.qtpl:49
 	qb422016 := qt422016.AcquireByteBuffer()
-//line domainuse.qtpl:53
-	WriteOptionalCallToCommandOptionFuncTemplate(qb422016, t, c, d, domains)
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
+	WriteCommandTemplate(qb422016, c, d, domains)
+//line domainuse.qtpl:49
 	qs422016 := string(qb422016.B)
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
 	qt422016.ReleaseByteBuffer(qb422016)
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
 	return qs422016
-//line domainuse.qtpl:53
+//line domainuse.qtpl:49
 }

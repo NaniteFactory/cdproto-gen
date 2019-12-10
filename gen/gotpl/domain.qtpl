@@ -15,9 +15,9 @@ type Domain struct {
 }
 
 // Do makes a Domain that executes a cdproto command against a chromedp context.
-// The function will panic if the given context is not an executable chromedp context.
-func Do(ctx context.Context) Domain {
-	return Domain{cdp.WithExecutor(ctx, chromedp.FromContext(ctx).Target)}
+// Set up arg `ctxWithExecutor` with `cdp.WithExecutor()` and `chromedp.FromContext()` beforehand.
+func Do(ctxWithExecutor context.Context) Domain {
+	return Domain{ctxWithExecutor}
 }
 {% for _, domain := range domains %}
 // {%s= domain.Domain.String() %} executes a cdproto command under {%s= domain.Domain.String() %} domain.

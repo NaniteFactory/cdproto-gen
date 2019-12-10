@@ -36,18 +36,14 @@ type {%s= d.Domain.String() %} struct {
 // returns:{% for _, p := range c.Returns %}{% if p.Name == Base64EncodedParamName %}{% continue %}{% endif %}
 //   {%s= RetParamDesc(p) %}{% endfor %}{% endif %}
 func (do{%s= domainName %} {%s= domainName %}) {%s= cmdName %}({%s= ParamList(c, d, domains, true) %}) ({%s= retTypeList %}err error) {
-	b := {%s= packageName %}.{%s= cmdName %}({%s= ArgList(c, d, domains, false) %})
-	{% if len(c.Parameters) != 0 %}{% for _, p := range c.Parameters %}{% if !p.Optional %}{% continue %}{% endif %}
-	{%s= OptionalCallToCommandOptionFuncTemplate(p, c, d, domains) %}{% endfor %}{% endif %}
+	b := {%s= packageName %}.{%s= cmdName %}({%s= ArgList(c, d, domains, false) %}){%if len(c.Parameters) != 0 
+	%}{% for _, p := range c.Parameters %}{% if !p.Optional %}{% continue %}{% endif %}{% code
+		optName := OptionFuncPrefix + GoName(p, false) + OptionFuncSuffix
+		v := strings.TrimSpace(GoName(p, true))
+	%}
+	if {%s= v %} != nil {
+		b = b.{%s= optName %}{% if IsTypeOriginallyNilable(p, d, domains) %}({%s= v %}){% else %}(*{%s= v %}){% endif %}
+	}{% endfor %}{% endif %}
 	return b.Do(do{%s= domainName %}.ctxWithExecutor)
-}
-{% endfunc %}
-
-{% func OptionalCallToCommandOptionFuncTemplate(t *pdl.Type, c *pdl.Type, d *pdl.Domain, domains []*pdl.Domain) %}{% code
-	optName := OptionFuncPrefix + GoName(t, false) + OptionFuncSuffix
-	v := strings.TrimSpace(GoName(t, true))
-%}
-if {%s= v %} != nil {
-	b = b.{%s= optName %}{% if IsTypeOriginallyNilable(t, d, domains) %}({%s= v %}){% else %}(*{%s= v %}){% endif %}
 }
 {% endfunc %}

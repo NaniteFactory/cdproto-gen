@@ -319,7 +319,7 @@ func loadProtoDefs() (*pdl.PDL, error) {
 	}
 
 	// grab browser + js definition
-	if err = load(util.ChromiumURL, "chromium", *flagChromium); err != nil {
+	if err = load(util.ChromiumURLOld, "chromium", *flagChromium); err != nil {
 		return nil, err
 	}
 	if err = load(util.V8URL, "v8", *flagV8); err != nil {
