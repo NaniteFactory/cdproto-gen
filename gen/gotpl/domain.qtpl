@@ -1,12 +1,12 @@
 {% import "github.com/chromedp/cdproto-gen/pdl" %}
 {% func DomainManagerTemplate(domains []*pdl.Domain) %}
+/*
+Package domain helps executing cdproto commands.
+*/
 package domain
 
 import (
 	"context"
-
-	"github.com/chromedp/cdproto/cdp"
-	"github.com/chromedp/chromedp"
 )
 
 // Domain executes a cdproto command against a chromedp context.

@@ -91,21 +91,21 @@ func ParamDesc(t *pdl.Type) string {
 	desc := t.Description
 	if desc != "" {
 		if t.Optional {
-			desc = " - " + "This can be nil. (Optional) " + genutil.CleanDesc(desc)
+			desc = ": " + "This can be nil. (Optional) " + genutil.CleanDesc(desc)
 		} else {
-			desc = " - " + genutil.CleanDesc(desc)
+			desc = ": " + genutil.CleanDesc(desc)
 		}
 	}
-	return snaker.ForceLowerCamelIdentifier(t.Name) + desc
+	return "`" + snaker.ForceLowerCamelIdentifier(t.Name) + "`" + desc
 }
 
 // RetParamDesc returns a return parameter description.
 func RetParamDesc(t *pdl.Type) string {
 	desc := t.Description
 	if desc != "" {
-		desc = " - " + genutil.CleanDesc(desc)
+		desc = ": " + genutil.CleanDesc(desc)
 	}
-	return snaker.ForceLowerCamelIdentifier(t.Name) + desc
+	return "`" + snaker.ForceLowerCamelIdentifier("ret"+snaker.ForceCamelIdentifier(t.Name)) + "`" + desc
 }
 
 // IsTypeOriginallyNilable is a predicate.

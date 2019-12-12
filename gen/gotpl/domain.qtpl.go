@@ -24,13 +24,13 @@ var (
 func StreamDomainManagerTemplate(qw422016 *qt422016.Writer, domains []*pdl.Domain) {
 //line domain.qtpl:2
 	qw422016.N().S(`
+/*
+Package domain helps executing cdproto commands.
+*/
 package domain
 
 import (
 	"context"
-
-	"github.com/chromedp/cdproto/cdp"
-	"github.com/chromedp/chromedp"
 )
 
 // Domain executes a cdproto command against a chromedp context.
