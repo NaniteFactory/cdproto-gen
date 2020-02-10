@@ -4,7 +4,6 @@ package main
 //go:generate gofmt -w -s gen/gotpl/
 
 import (
-	"github.com/nanitefactory/chromebot-domain-gen/gen/gotpl"
 	"bytes"
 	"context"
 	"errors"
@@ -25,10 +24,12 @@ import (
 
 	"github.com/chromedp/cdproto-gen/diff"
 	"github.com/chromedp/cdproto-gen/fixup"
-	"github.com/nanitefactory/chromebot-domain-gen/gen"
 	"github.com/chromedp/cdproto-gen/gen/genutil"
 	"github.com/chromedp/cdproto-gen/pdl"
 	"github.com/chromedp/cdproto-gen/util"
+
+	"github.com/nanitefactory/chromebot-domain-gen/gen"
+	"github.com/nanitefactory/chromebot-domain-gen/gen/gotpl"
 )
 
 const (
@@ -262,7 +263,7 @@ func run() error {
 	if err = gofmt(fmtFiles(files, pkgs)); err != nil {
 		return err
 	}
-	
+
 	// domain manager
 	if err := func() error {
 		strFilepath := filepath.Join(*flagOut, "domain.go")
@@ -272,7 +273,7 @@ func run() error {
 			return err
 		}
 		defer f.Close()
-		gotpl.WriteDomainManagerTemplate(f, processed)	
+		gotpl.WriteDomainManagerTemplate(f, processed)
 		return nil
 	}(); err != nil {
 		return err
@@ -319,7 +320,7 @@ func loadProtoDefs() (*pdl.PDL, error) {
 	}
 
 	// grab browser + js definition
-	if err = load(util.ChromiumURLOld, "chromium", *flagChromium); err != nil {
+	if err = load(util.ChromiumURL, "chromium", *flagChromium); err != nil {
 		return nil, err
 	}
 	if err = load(util.V8URL, "v8", *flagV8); err != nil {
@@ -471,7 +472,11 @@ func contains(m map[string]*bytes.Buffer, n string) bool {
 
 // pad pads a string.
 func pad(s string, n int) string {
-	return s + strings.Repeat(" ", n-len(s))
+	n = n - len(s)
+	if n < 0 {
+		return s
+	}
+	return s + strings.Repeat(" ", n)
 }
 
 // whitelisted checks if n is a whitelisted file.

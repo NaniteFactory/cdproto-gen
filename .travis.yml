@@ -28,3 +28,5 @@ script:
   - cd $GOPATH/src/github.com/nanitefactory/chromebot-domain-gen
   - go build
   - ./chromebot-domain-gen -chromium 79.0.3945.28
+  - ./chromebot-domain-gen -chromium 81.0.4044.9
+  
